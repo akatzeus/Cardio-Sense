@@ -1,0 +1,17 @@
+# Python
+backend/venv/
+__pycache__/
+*.pyc
+.env
+
+# Node
+frontend/node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# Build
+frontend/build/
+
+# OS / Editor
+.vscode/
+.DS_Store
