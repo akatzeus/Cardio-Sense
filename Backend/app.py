@@ -10,6 +10,7 @@ from auth.routes import auth_bp
 from routes.user_routes import user_bp
 from routes.doctor_routes import doctor_bp
 from routes.health_routes import health_bp
+# from ml.serving.ml_routes import ml_bp
 
 
 def create_app():
@@ -24,7 +25,7 @@ def create_app():
     CORS(
         app,
         supports_credentials=True,
-        resources={r"/*": {"origins": "*"}}  # adjust in production
+        resources={r"/*": {"origins": "*"}}
     )
 
     # Register blueprints
@@ -32,6 +33,7 @@ def create_app():
     app.register_blueprint(user_bp)
     app.register_blueprint(doctor_bp)
     app.register_blueprint(health_bp)
+    # app.register_blueprint(ml_bp)
 
     # Create DB tables
     with app.app_context():
