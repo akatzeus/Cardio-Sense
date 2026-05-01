@@ -14,6 +14,10 @@ import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import HealthDetails from "./pages/HealthDeatils";
+import DoctorDashboard from "./pages/DoctorDashboard";
+import PatientDetail   from "./pages/PatientDetail";
+import ChooseDoctor    from "./pages/ChooseDoctor";
+import MessagesPage    from "./pages/MessagesPage";   // ✅ import the messages component
 
 const queryClient = new QueryClient();
 
@@ -36,6 +40,10 @@ const App = () => (
           <Route path="/history" element={<ProtectedRoute><HistoryTrends /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/health-setup" element={<ProtectedRoute><HealthDetails /></ProtectedRoute>} />
+          <Route path="/doctor/dashboard"       element={<ProtectedRoute><DoctorDashboard /></ProtectedRoute>} />
+          <Route path="/doctor/patients/:patientId" element={<ProtectedRoute><PatientDetail /></ProtectedRoute>} />
+          <Route path="/choose-doctor"          element={<ProtectedRoute><ChooseDoctor /></ProtectedRoute>} />
+          <Route path="/messages"               element={<ProtectedRoute><MessagesPage /></ProtectedRoute>} />   {/* ✅ add this line */}
 
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -20,7 +20,7 @@ const navItems = [
   { title: "Live Monitor", url: "/monitor", icon: Activity },
   { title: "Predictions", url: "/predictions", icon: Brain },
   { title: "History", url: "/history", icon: History },
-  { title: "Profile", url: "/profile", icon: User },
+  { title: "Doctor", url: "/choose-doctor", icon: User },
   { title: "About / Help", url: "/about", icon: HelpCircle },
 ];
 

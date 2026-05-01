@@ -13,7 +13,13 @@ const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [form, setForm] = useState({ name: "", email: "", password: "", role: "user" });
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+    role: "user",
+  });
+
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,9 +37,15 @@ const Auth = () => {
 
     try {
       const endpoint = isLogin ? "/auth/login" : "/auth/register";
+
       const body = isLogin
         ? { email: form.email, password: form.password }
-        : { name: form.name, email: form.email, password: form.password, role: form.role };
+        : {
+            name: form.name,
+            email: form.email,
+            password: form.password,
+            role: form.role,
+          };
 
       const res = await fetch(`${API_BASE}${endpoint}`, {
         method: "POST",
@@ -48,17 +60,24 @@ const Auth = () => {
         return;
       }
 
-      // Store token and user info
-      localStorage.setItem("access_token", data.access_token);
-      localStorage.setItem("user", JSON.stringify(data.user));
+      // Replace localStorage with sessionStorage
+      sessionStorage.setItem("access_token", data.access_token);
+      sessionStorage.setItem("user", JSON.stringify(data.user));
+      sessionStorage.setItem("user_id", data.user.id.toString());
 
-// Replace the navigate line after successful login/register
-    if (isLogin) {
-      navigate("/dashboard");
-    } else {
-      // Only send Users to health setup, Doctors/Admins go straight to dashboard
-      navigate(form.role === "user" ? "/health-setup" : "/dashboard");
-    }
+      // 🔥 ROLE-BASED NAVIGATION
+      const role = data.user.role.toLowerCase();
+
+      if (isLogin) {
+        if (role === "doctor") navigate("/doctor/dashboard");
+        else if (role === "admin") navigate("/dashboard");
+        else navigate("/dashboard");
+      } else {
+        // Signup flow
+        if (role === "user") navigate("/health-setup");
+        else if (role === "doctor") navigate("/doctor/dashboard");
+        else navigate("/dashboard");
+      }
     } catch (err) {
       setError("Could not connect to server. Please try again.");
     } finally {
@@ -74,27 +93,57 @@ const Auth = () => {
             <Heart className="h-7 w-7 text-primary fill-primary" />
             <span className="font-bold text-xl">CardioSense</span>
           </Link>
-          <CardTitle className="text-2xl">{isLogin ? "Welcome Back" : "Create Account"}</CardTitle>
+
+          <CardTitle className="text-2xl">
+            {isLogin ? "Welcome Back" : "Create Account"}
+          </CardTitle>
+
           <CardDescription>
-            {isLogin ? "Login to access your dashboard" : "Sign up to start monitoring your heart health"}
+            {isLogin
+              ? "Login to access your dashboard"
+              : "Sign up to start monitoring your heart health"}
           </CardDescription>
         </CardHeader>
+
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             {!isLogin && (
               <div className="space-y-2">
                 <Label htmlFor="name">Full Name</Label>
-                <Input id="name" placeholder="John Doe" value={form.name} onChange={handleChange} required />
+                <Input
+                  id="name"
+                  placeholder="John Doe"
+                  value={form.name}
+                  onChange={handleChange}
+                  required
+                />
               </div>
             )}
+
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" placeholder="you@example.com" value={form.email} onChange={handleChange} required />
+              <Input
+                id="email"
+                type="email"
+                placeholder="you@example.com"
+                value={form.email}
+                onChange={handleChange}
+                required
+              />
             </div>
+
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" placeholder="••••••••" value={form.password} onChange={handleChange} required />
+              <Input
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                value={form.password}
+                onChange={handleChange}
+                required
+              />
             </div>
+
             {!isLogin && (
               <div className="space-y-2">
                 <Label htmlFor="role">Role</Label>
@@ -110,15 +159,34 @@ const Auth = () => {
                 </Select>
               </div>
             )}
-            {error && <p className="text-sm text-destructive text-center">{error}</p>}
-            <Button type="submit" className="w-full" size="lg" disabled={loading}>
-              {loading ? "Please wait..." : isLogin ? "Login" : "Sign Up"}
+
+            {error && (
+              <p className="text-sm text-destructive text-center">{error}</p>
+            )}
+
+            <Button
+              type="submit"
+              className="w-full"
+              size="lg"
+              disabled={loading}
+            >
+              {loading
+                ? "Please wait..."
+                : isLogin
+                ? "Login"
+                : "Sign Up"}
             </Button>
           </form>
+
           <div className="mt-4 text-center text-sm text-muted-foreground">
-            {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
+            {isLogin
+              ? "Don't have an account?"
+              : "Already have an account?"}{" "}
             <button
-              onClick={() => { setIsLogin(!isLogin); setError(""); }}
+              onClick={() => {
+                setIsLogin(!isLogin);
+                setError("");
+              }}
               className="text-primary font-medium hover:underline"
             >
               {isLogin ? "Sign Up" : "Login"}

@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
-
+from flask_migrate import Migrate
 from config import Config
 from database import db
 
@@ -10,7 +10,8 @@ from auth.routes import auth_bp
 from routes.user_routes import user_bp
 from routes.doctor_routes import doctor_bp
 from routes.health_routes import health_bp
-# from ml.serving.ml_routes import ml_bp
+from routes.messages_routes import message_bp
+from routes.ml_routes import ml_bp
 
 
 def create_app():
@@ -27,13 +28,15 @@ def create_app():
         supports_credentials=True,
         resources={r"/*": {"origins": "*"}}
     )
+    migrate = Migrate(app, db)
 
     # Register blueprints
     app.register_blueprint(auth_bp)
     app.register_blueprint(user_bp)
     app.register_blueprint(doctor_bp)
     app.register_blueprint(health_bp)
-    # app.register_blueprint(ml_bp)
+    app.register_blueprint(message_bp)
+    app.register_blueprint(ml_bp)
 
     # Create DB tables
     with app.app_context():
@@ -50,4 +53,4 @@ def create_app():
 app = create_app()
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0", port=5000)
